@@ -85,5 +85,18 @@ def run_similarity_test(filename, semantic_descriptors):
     """This function takes in a string 'filename' which is the name of a file in the same format as 'test.txt'
     and returns the percentage (i.e. float between 0.0 and 100.0) of questions on which most_similar_word()
     gueses the answer correctly using the semantic descriptors stored in 'semantic_descriptors'
-    The format of 'test.txt' is as follows
+    
+    The format of 'test.txt' is as follows. On each line, we are given a word (all lowercase), the correct
+    answer, and the choices. For example, the line:
+
+            feline cat dog cat horse
+
+    Represents the question:
+
+            feline:
+            (a) cat
+            (b) dog
+            (c) horse
+
+    and indicates that the correct answer is "cat"
     """
