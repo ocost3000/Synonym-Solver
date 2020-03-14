@@ -1,6 +1,7 @@
 #ifndef SYNONYMS_H
 #define SYNONYMS_H
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <cmath>
 #include <string>
@@ -9,15 +10,15 @@
 #include <map>
 using namespace std;
 
-double norm(vector<double> vec);
+double norm(vector<int> vec);
 
-double cosineSimilarity(vector<double> vec1, vector<double> vec2);
+double cosineSimilarity(vector<int> vec1, vector<int> vec2);
 
 vector<vector<string> > getSentenceLists(string text);
 
-void getSentenceListFromFiles(vector<string> sentences);
+vector<vector<string> > getSentenceListFromFiles(vector<string> filenames);
 
-map<string, map<string, int> > buildSemanticDescriptors(vector<string> sentences);
+map<string, map<string, int> > buildSemanticDescriptors(vector<vector<string> > sentences);
 
 string mostSimilarWord(string word, vector<string> choices, map<string, int> semanticDescriptions);
 
