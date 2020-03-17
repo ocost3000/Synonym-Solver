@@ -5,13 +5,15 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "cpp build active file",
-            "command": "/usr/bin/cpp",
+            "label": "g++ build active file",
+            "command": "/usr/bin/g++",
             "args": [
                 "-g",
-                "${file}",
+                "/home/ocost6/synonymSolver/cpp/main.cpp",
+                "/home/ocost6/synonymSolver/cpp/synonyms.cpp",
+                "/home/ocost6/synonymSolver/cpp/parsing.cpp",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${fileDirname}/main"
             ],
             "options": {
                 "cwd": "/usr/bin"

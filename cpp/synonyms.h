@@ -14,6 +14,7 @@ double norm(vector<int> vec);
 
 double cosineSimilarity(vector<int> vec1, vector<int> vec2);
 
+
 vector<vector<string> > getSentenceLists(string text);
 
 vector<vector<string> > getSentenceListFromFiles(vector<string> filenames);
