@@ -16,3 +16,15 @@ including the text parsing as starter code.
 
 This push successfully read the test-hows-it-going.txt file into a 2D vector,
 dividing each sentence into a vector of strings.
+
+
+-----------------------------------3-19-2020------------------------------------
+
+Now I'm adapting the getSentenceListFromFiles() function to the
+getSentenceLists() function. I might consider changing parameters for
+getSentenceLists() to stringstream instead of string.
+
+Test main() runs perfectly, so it seems the functions work together properly.
+
+I also added the pdf handout so that I don't have to keep crossing glances over
+at my pdf viewer.

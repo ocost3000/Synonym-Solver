@@ -31,7 +31,6 @@ double cosineSimilarity(vector<int> vec1, vector<int> vec2) {
 */
 
 
-/*
 vector<vector<string> > getSentenceLists(string text) {
 
     vector<vector<string> > allSentences;
@@ -39,22 +38,55 @@ vector<vector<string> > getSentenceLists(string text) {
     istringstream iSS(text);
 
     // For our purposes, sentences are separated by one of the strings ".", "?", or "!"
-    size_t pos = 0;
     string word = "";
     vector <string> sentence;
-    while (iSS >> word) {
-        pos = word.find_first_of(".?!", 0);
-        // found punctuation
-        if (pos != string::npos) {
+
+    // Position where sentence ends
+    size_t endPos = 0;
+    // Position where word is divided by punctuation
+    size_t split = 0;
+    size_t start = 0;
+    string w = "";
+    
+    // Class A punctuation ".", "?", or "!"
+        // will end String
+    string A = ".?!";
+    // Class B punctuation ",","-","--",":",";","!","?",".", "'", "\""
+        // will split word
+    string B = ",--:;'\"";
+
+    OUTER:while (iSS >> w) {
+        toLowerCase(w);
+        start = 0;
+        endPos = w.find_first_of(A, 0);
+        split = w.find_first_of(B, 0);
+        // found Class B
+        while (split != string::npos) {
+            sentence.push_back(w.substr(start, split));
+            // Check if split is at end of w
+            if (split+1 < w.length()) {
+                // and then if there are letters after w
+                if (isalpha(w.at(split+1))) {
+                    start = split + 1;
+                    split = w.find_first_of(B, start);
+                    continue;
+                }
+            }
+            // Word is done, move on to next one
+            goto OUTER;
+        }
+        // found Class A
+        if (endPos != string::npos) {
             // cut off word at punctuation and add to vector
-            sentence.push_back(word.substr(0, pos));
+            sentence.push_back(w.substr(0, endPos));
             // Insert sentence and reset vector
             allSentences.push_back(sentence);
             sentence.clear();
         }
+        // Word is done
         else {
             // place word into vector
-            sentence.push_back(word);
+            sentence.push_back(w);
         }
     }
 
@@ -62,72 +94,35 @@ vector<vector<string> > getSentenceLists(string text) {
 
 }
 
-*/
 
 vector<vector<string> > getSentenceListFromFiles(vector<string> filenames) {
 
-    vector<vector<string> > allSentences;
-    vector <string> sentence;
+    vector<vector<string> > allText;
+    vector<vector<string> > newSentences;
     ifstream iFS;
     
-    // Position where sentence ends
-    size_t endPos = 0;
-    // Position where word is divided by punctuation
-    size_t split = 0;
-    size_t start = 0;
-    string w = "";
 
     for (size_t i = 0; i < filenames.size(); i++) {
-        iFS.open(filenames[i]);
+        iFS.open(filenames.at(i));
         if (!iFS) {
             cout << "Failed to open " << filenames[i] << endl;
-            return allSentences;
+            return allText;
         }
 
-        // Class A punctuation ".", "?", or "!"
-            // will end String
-        string A = ".?!";
-        // Class B punctuation ",","-","--",":",";","!","?",".", "'", "\""
-            // will split word
-        string B = ",--:;'\"";
-        OUTER:while (iFS >> w) {
-            toLowerCase(w);
-            endPos = w.find_first_of(A, 0);
-            split = w.find_first_of(B, 0);
-            start = 0;
-            // found Class B
-            while (split != string::npos) {
-                sentence.push_back(w.substr(start, split));
-                // Check if split is at end of w
-                if (split+1 < w.length()) {
-                    // and then if there are letters after w
-                    if (isalpha(w.at(split+1))) {
-                        start = split + 1;
-                        split = w.find_first_of(B, start);
-                        continue;
-                    }
-                }
-                // Word is done, move on to next one
-                goto OUTER;
-            }
-            // found Class A
-            if (endPos != string::npos) {
-                // cut off word at punctuation and add to vector
-                sentence.push_back(w.substr(0, endPos));
-                // Insert sentence and reset vector
-                allSentences.push_back(sentence);
-                sentence.clear();
-            }
-            // Word is done
-            else {
-                // place word into vector
-                sentence.push_back(w);
-            }
-        }
+        // Read file into stringstream
+        stringstream buffer;
+        buffer << iFS.rdbuf();
+
+        // Send stringstream as string to get sentence list for book
+        newSentences = getSentenceLists(buffer.str());
+        // Concatenate vector
+        allText.insert(allText.end(), newSentences.begin(),
+                            newSentences.end());
+        newSentences.clear();
         iFS.close();
     }
 
-    return allSentences;
+    return allText;
 }
 
 /*
