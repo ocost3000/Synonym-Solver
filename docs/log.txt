@@ -10,9 +10,9 @@ properly parse words and split them in half if they have a punctuation that
 doesn't terminate a sentence. I created a function to bring a string to
 lowercase since that is also required.
 
-I'm noting that parsing the text can be quite long winded. It's probably less
-of a hassle on Python, the intended language for this project. Perhaps consider 
-including the text parsing as starter code.
+I'm noting that parsing the text in C++ can be quite long winded. It's probably 
+less of a hassle on Python, the intended language for this project. Perhaps 
+consider including the text parsing as starter code.
 
 This push successfully read the test-hows-it-going.txt file into a 2D vector,
 dividing each sentence into a vector of strings.
@@ -28,3 +28,20 @@ Test main() runs perfectly, so it seems the functions work together properly.
 
 I also added the pdf handout so that I don't have to keep crossing glances over
 at my pdf viewer.
+
+-----------------------------------3-20-2020------------------------------------
+
+It appears buildSemanticDescriptors() does its job quite well, and my test files
+outputted what the examples from the handout describe (see "I am a sick man..."
+bottom middle of first page). I figure the trickiest part is done. Now all that
+is needed is to use the semantic description with the proper math to calculate
+word similarites.
+
+I moved the filenames from a hard encoded vector in main() to a file
+book-names.txt that is read from a helper function, getFiles(). That way I can 
+add or remove books without recompiling. 
+
+Displaying the semantic description of a full book shows I still need to work on
+tokenizing, still a few words have quotes around them. It's worth the trouble
+considering double quotes are in like every book ever. Again, working with
+strings is feeling a bit tedious.

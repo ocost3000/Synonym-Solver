@@ -1,0 +1,3 @@
+/home/ocost6/synonymSolver/books/test-notes-from-underground.txt
+/home/ocost6/synonymSolver/books/moth-decides.txt
+/home/ocost6/synonymSolver/books/racer-boys.txt

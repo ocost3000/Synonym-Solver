@@ -1,8 +1,7 @@
 #include "synonyms.h"
 #include "parsing.h"
 
-/*
-double norm(vector<int> vec) {
+double norm(const vector<int>& vec) {
     // Return the norm of a vector stored as a dictionary,
     // as described in the instructions.
 
@@ -14,39 +13,38 @@ double norm(vector<int> vec) {
     return sqrt(double(sumOfSquares));
 }
 
-double cosineSimilarity(vector<int> vec1, vector<int> vec2) {
+double cosineSimilarity(const vector<int>& vec1, const vector<int>& vec2) {
     // Return the cosine similarity of sparse vectors vec1 and vec2,
     // stored as dictionaries as described in the handout for Project 2.
 
-    double dotProduct = 0.0; // floating point to handle large numbers
+    int matchIndex = 0;
+    int dotProduct = 0.0; // floating point to handle large numbers
     for (size_t i = 0; i < vec1.size(); i++) {
-        vector<int>::iterator it = find(vec2.begin(), vec2.end(), vec1[i]);
-        if (it != vec2.end()) {     // TODO if vec1[i] in vec2 
-            dotProduct += vec1[distance(vec2.begin(), it)] * vec2[i];
+        // find where vec1[i] is in vec2, if at all
+        matchIndex = findInVec(vec2, vec1[i]);
+        // if match found
+        if (matchIndex != -1) {
+            dotProduct += vec1[i] * vec2[matchIndex];
         }
     }
 
-    return dotProduct / (norm(vec1) * norm(vec2));
+    return double(dotProduct) / (norm(vec1) * norm(vec2));
 }
-*/
 
-
-vector<vector<string> > getSentenceLists(string text) {
+vector<vector<string> > getSentenceLists(stringstream& ss) {
 
     vector<vector<string> > allSentences;
     // Read in string. 
-    istringstream iSS(text);
 
-    // For our purposes, sentences are separated by one of the strings ".", "?", or "!"
     string word = "";
     vector <string> sentence;
 
+    size_t start = 0;
+    string w = "";
     // Position where sentence ends
     size_t endPos = 0;
     // Position where word is divided by punctuation
     size_t split = 0;
-    size_t start = 0;
-    string w = "";
     
     // Class A punctuation ".", "?", or "!"
         // will end String
@@ -55,7 +53,7 @@ vector<vector<string> > getSentenceLists(string text) {
         // will split word
     string B = ",--:;'\"";
 
-    OUTER:while (iSS >> w) {
+    OUTER:while (ss >> w) {
         toLowerCase(w);
         start = 0;
         endPos = w.find_first_of(A, 0);
@@ -95,13 +93,14 @@ vector<vector<string> > getSentenceLists(string text) {
 }
 
 
-vector<vector<string> > getSentenceListFromFiles(vector<string> filenames) {
+vector<vector<string> > getSentenceListFromFiles(
+                                                const vector<string>& filenames
+                                                ) {
 
     vector<vector<string> > allText;
     vector<vector<string> > newSentences;
     ifstream iFS;
     
-
     for (size_t i = 0; i < filenames.size(); i++) {
         iFS.open(filenames.at(i));
         if (!iFS) {
@@ -113,38 +112,56 @@ vector<vector<string> > getSentenceListFromFiles(vector<string> filenames) {
         stringstream buffer;
         buffer << iFS.rdbuf();
 
-        // Send stringstream as string to get sentence list for book
-        newSentences = getSentenceLists(buffer.str());
+        // Send stringstream to get sentence list for book
+        newSentences = getSentenceLists(buffer);
         // Concatenate vector
         allText.insert(allText.end(), newSentences.begin(),
                             newSentences.end());
         newSentences.clear();
+        // on to next file
         iFS.close();
     }
 
     return allText;
 }
 
-/*
-map<string, map<string, int> > buildSemanticDescriptors(vector<vector<string> > sentences) {
+map<string, map<string, int> > buildSemanticDescriptors(
+                                        vector<vector<string> >& sentences
+                                        ) {
+
     map<string, map<string, int> > d;
-    map<string, map<string, int> >::iterator it;
+    map<string, int> wd;
     string w = "";
 
+    // For every sentence
     for (size_t i = 0; i < sentences.size(); i++) {
-        for (size_t j = 0; j > sentences[i].size(); j++) {
-            it = d.find(sentences[i][j]);
+        // Create a semantic description recording the words in each sentence
+        for (size_t j = 0; j < sentences[i].size(); j++) {
+            w = sentences[i][j];
+            addToMap(wd, w);
+        }
+        // Add semantic descripton to dictionary on a word-by-word basis
+        // Because this is done for every word, we need another loop
+        for (map<string, int>::iterator it = wd.begin(); it != wd.end(); ++it) {
 
-            // Found word
-            if (it != string::npos) {
-                
+            // Insert sem. desc. to dictionary
+            if (d.count(it->first)) { // If word already in dictionary
+                mergeMaps(d[it->first], wd, it->first); 
+            }
+            else { // Need to add word to dictionary
+                d.emplace(it->first, wd); 
+                d[it->first].erase(it->first); // Remove duplicates 
             }
         }
+
+        // Wipe wd to reuse for next sentence
+        wd.clear();
     }
 
     return d;
 }
 
+/*
 string mostSimilarWord(string word, vector<string> choices, map<string, int> semanticDescriptions);
 
     return wordMostSimilar;

@@ -1,28 +1,44 @@
 #include "synonyms.h"
 #include "parsing.h"
 
-// Test functions
+// Testing Functions
 void displaySentences(vector<vector<string> > vec);
+void displaySemanticDescriptors(map<string, map<string, int> >& d);
 
 int main() {
 
     // TESTING getSentenceListFromFiles
-    vector<string> files = {
-        "/home/ocost6/synonymSolver/books/test-hows-it-going.txt",
-        "/home/ocost6/synonymSolver/books/test-notes-from-underground.txt"
-        };
+    vector<string> files = getFiles();
     vector<vector<string> > sentenceList; 
     sentenceList = getSentenceListFromFiles(files);
-    displaySentences(sentenceList);
+    map<string, map<string, int> > theMap;
+    theMap = buildSemanticDescriptors(sentenceList);
+    displaySemanticDescriptors(theMap);
 
    // PARSING OKAY
 }
 
-// Testing Functions
 void displaySentences(vector<vector<string> > vec) {
     for (size_t i = 0; i < vec.size(); i++) {
         for (size_t j = 0; j < vec[i].size(); j++) {
             cout << vec[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+void displaySemanticDescriptors(map<string, map<string, int> >& d) {
+    string currKey = "";
+    for (map<string, map<string, int> >::iterator outIt = d.begin();
+        outIt != d.end(); ++outIt) {
+
+        currKey = outIt->first;
+        cout << currKey << " | ";
+
+        for (map<string, int>::iterator inIt = d[currKey].begin();
+            inIt != d[currKey].end(); ++inIt) {
+
+            cout << '"' << inIt->first << "\": " << inIt->second << ", ";
         }
         cout << endl;
     }
