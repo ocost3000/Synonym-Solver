@@ -45,3 +45,52 @@ Displaying the semantic description of a full book shows I still need to work on
 tokenizing, still a few words have quotes around them. It's worth the trouble
 considering double quotes are in like every book ever. Again, working with
 strings is feeling a bit tedious.
+
+-----------------------------------3-28-2020------------------------------------
+
+Program is functional!
+
+First I had to rewrite the two provided funcitons norm() and cosineSimilarity(),
+because while the function descriptions described the parameters as vectors, the
+reality was that the functions would need maps, not vectors, to pass along. So I
+adjusted vector syntax to map syntax accordingly. The maps were the semantic
+descriptors of words, which is only referred to as a vector to fit the
+mathematical use of cosine similarity and dot product. Typically math and
+computer science are not so confusing together.
+
+The functions themselves were not too bad considering that's where all the magic
+happens. Typical use of iterators are all around the program.
+
+Following the instruction outlined in the handout (./handout.pdf), I parsed two
+books, Swann's Way and War and Peace. For prompts I used the 40 questions
+provided on the NIFTY page (../cpp/test.txt). My accuracy came to about 74%,
+however I noticed that is despite the fact that at least 7 words prompted did
+not exist in the semantic dictionary (therefore they were not read in any of the
+books). Consider providing test synonym problems that have words that actually
+exist in the books that are read in. I.e. if students are given a word and two
+possible synonyms, all three words should be in the books parsed, or else they
+won't exist in the semantic description and the computer may fail.
+
+I didn't bother changing the string tokenizing too much. I am following the
+intermediate instructions which omit delimiting with parentheses, and other
+restrictions. The logic is that there will be an insignificant amount of 
+incorrectly read words in the semantic dictionary. Perhaps it might be worth
+polishing the tokenizing.
+
+One choice I have yet to make is whether I should remove a word's duplicate.
+That is, the semantic descriptor for the word "it" includes the word "it", and
+I hypothesize a word's duplicate semantic descriptor has a high value
+(repetition is common).
+
+There's a few more things I want to do before I am satisifed:
+
+1. Rewrite function parameters to be constant references when possible to save
+   space.
+2. Rewrite loops to iterator colon syntax (if possible)
+3. Insert clarifications of code where it can help.
+4. Get feedback on code, runtime.
+
+And for my own interest:
+
+1. Rewrite in Python
+2. Add books to increase dataset. 

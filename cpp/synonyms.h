@@ -10,9 +10,10 @@
 #include <map>
 using namespace std;
 
-double norm(const vector<int>& vec);
+double norm(const map<string, int>& mp);
 
-double cosineSimilarity(const vector<int>& vec1, const vector<int>& vec2);
+double cosineSimilarity(const map<string, int>& mp1, 
+                        const map<string, int>& mp2);
 
 vector<vector<string> > getSentenceLists(stringstream& ss);
 
@@ -24,8 +25,10 @@ map<string, map<string, int> > buildSemanticDescriptors(
                                         vector<vector<string> >& sentences
                                         );
 
-string mostSimilarWord(string word, vector<string> choices, map<string, int> semanticDescriptions);
+string mostSimilarWord(string word, vector<string> choices, 
+                       map<string, map<string, int> >& semanticDescriptors);
 
-double runSimilarityTest(string fileName, map<string, int> semanticDescriptions);
+double runSimilarityTest(string fileName,
+                         map<string, map<string, int> >& semanticDescriptors);
 
 #endif

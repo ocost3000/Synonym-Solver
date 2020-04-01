@@ -1,5 +1,5 @@
-#ifndef PARSING_H
-#define PARSING_H
+#ifndef HELPERS_H
+#define HELPERS_H
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -10,8 +10,6 @@ using namespace std;
 vector<string> getFiles();
 
 void toLowerCase(string& w);
-
-int findInVec(const vector<int>& vec, const int& key);
 
 int countInVec(const vector<int>& vec, const int& key);
 

@@ -11,7 +11,8 @@
                 "-g",
                 "/home/ocost6/synonymSolver/cpp/main.cpp",
                 "/home/ocost6/synonymSolver/cpp/synonyms.cpp",
-                "/home/ocost6/synonymSolver/cpp/parsing.cpp",
+                "/home/ocost6/synonymSolver/cpp/helpers.cpp",
+                "/home/ocost6/synonymSolver/cpp/testers.cpp",
                 "-o",
                 "${fileDirname}/main"
             ],

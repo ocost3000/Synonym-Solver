@@ -1,34 +1,36 @@
 #include "synonyms.h"
-#include "parsing.h"
+#include "helpers.h"
 
-double norm(const vector<int>& vec) {
+double norm(const map<string, int>& mp) {
     // Return the norm of a vector stored as a dictionary,
     // as described in the instructions.
 
-    int sumOfSquares = 0;
-    for (int i = 0; i < vec.size(); i++) {
-        sumOfSquares += vec[i] * vec[i];
+    double sumOfSquares = 0.0;
+    for (map<string, int>::const_iterator it = mp.begin(); it != mp.end(); ++it)
+    {
+        sumOfSquares += pow(it->second, 2);
     }
 
-    return sqrt(double(sumOfSquares));
+    return sqrt(sumOfSquares);
 }
 
-double cosineSimilarity(const vector<int>& vec1, const vector<int>& vec2) {
-    // Return the cosine similarity of sparse vectors vec1 and vec2,
+double cosineSimilarity(const map<string, int>& mp1, 
+                        const map<string, int>& mp2) {
+    // Return the cosine similarity of vectors mp1 and mp2
     // stored as dictionaries as described in the handout for Project 2.
 
-    int matchIndex = 0;
     int dotProduct = 0.0; // floating point to handle large numbers
-    for (size_t i = 0; i < vec1.size(); i++) {
-        // find where vec1[i] is in vec2, if at all
-        matchIndex = findInVec(vec2, vec1[i]);
+    map<string, int>::const_iterator match;
+    for (map<string, int>::const_iterator it = mp1.begin(); it != mp1.end(); ++it)
+    {
+        match = mp2.find(it->first);
         // if match found
-        if (matchIndex != -1) {
-            dotProduct += vec1[i] * vec2[matchIndex];
+        if (match != mp2.end()) {
+            dotProduct += it->second * match->second;
         }
     }
 
-    return double(dotProduct) / (norm(vec1) * norm(vec2));
+    return double(dotProduct) / (norm(mp1) * norm(mp2));
 }
 
 vector<vector<string> > getSentenceLists(stringstream& ss) {
@@ -36,7 +38,6 @@ vector<vector<string> > getSentenceLists(stringstream& ss) {
     vector<vector<string> > allSentences;
     // Read in string. 
 
-    string word = "";
     vector <string> sentence;
 
     size_t start = 0;
@@ -49,9 +50,9 @@ vector<vector<string> > getSentenceLists(stringstream& ss) {
     // Class A punctuation ".", "?", or "!"
         // will end String
     string A = ".?!";
-    // Class B punctuation ",","-","--",":",";","!","?",".", "'", "\""
+    // Class B punctuation ",","-","--",":",";","!","?",".", "'", "“", "”"
         // will split word
-    string B = ",--:;'\"";
+    string B = ",--:;'“”\"";
 
     OUTER:while (ss >> w) {
         toLowerCase(w);
@@ -146,12 +147,12 @@ map<string, map<string, int> > buildSemanticDescriptors(
 
             // Insert sem. desc. to dictionary
             if (d.count(it->first)) { // If word already in dictionary
-                mergeMaps(d[it->first], wd, it->first); 
+                mergeMaps(d.at(it->first), wd, it->first); 
             }
             else { // Need to add word to dictionary
                 d.emplace(it->first, wd); 
-                d[it->first].erase(it->first); // Remove duplicates 
             }
+
         }
 
         // Wipe wd to reuse for next sentence
@@ -161,14 +162,94 @@ map<string, map<string, int> > buildSemanticDescriptors(
     return d;
 }
 
-/*
-string mostSimilarWord(string word, vector<string> choices, map<string, int> semanticDescriptions);
+string mostSimilarWord(string word, vector<string> choices, 
+                       map<string, map<string, int> >& semanticDescriptors) {
+    string wordMostSimilar = "";
+
+    // Check word is in dictionary
+
+    // Find semantic similarity for each word in vector choices
+    double bestSim = -1;
+    double coSim = 0;
+    size_t bestIndex = 0;
+
+    for (size_t i = 0; i < choices.size(); i++) {
+        if (!semanticDescriptors.count(choices[i])) {
+            // Not in sem. desc....skip word
+            continue;
+        }
+        coSim = cosineSimilarity(semanticDescriptors.at(word),
+                                 semanticDescriptors.at(choices[i]));
+        // Decide which of all words has the best similarity
+        if (coSim > bestSim) {
+            bestSim = coSim;
+            bestIndex = i;
+        }
+
+    }
+
+    wordMostSimilar = choices[bestIndex];
 
     return wordMostSimilar;
 }
 
-double runSimilarityTest(string fileName, map<string, int> semanticDescriptions) {
+double runSimilarityTest(string fileName,
+                         map<string, map<string, int> >& semanticDescriptors) {
+    // See handout on how to structure test file
+    double accuracy = 0;
+    ifstream iFS(fileName);
+    if (!iFS) {
+        cout << "cannot open test file" << endl;
+        return -1;
+    }
+
+    string prompt = "";
+    string answer = "-";
+    string choice = "---";
+    vector<string> options;
+
+    int questions = 0;
+    string line;
+    istringstream is;
+    int correct = 0;
+    while (getline(iFS, line)) {
+        is.str(line);
+        // Get prompt and answer
+        is >> prompt >> answer;
+        // Get possible answers
+        while (is >> choice) {
+            options.push_back(choice);
+        }
+
+        // Get computer's response
+        // first check if word is in dictionary
+        if (!semanticDescriptors.count(prompt)) {
+            cout << prompt << " is not in library :( try another word" << endl;
+            questions--;
+        }
+
+        // Then see if computer can guess right or wrong
+        else {
+            string response = mostSimilarWord(prompt, options, semanticDescriptors);
+            if (answer.compare(response) == 0) {
+                cout << "Right: " << prompt << endl;
+                correct++;
+            }
+
+            else {
+                cout << "Wrong: " << prompt << endl;
+            }
+        }
+
+        is.clear();
+        options.clear();
+        questions++;
+    }
+
+    // My ghetto try catch block
+    if (questions != 0) {
+        accuracy = correct / (double)questions;
+    }
 
     return accuracy;
 }
-*/

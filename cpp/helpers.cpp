@@ -1,4 +1,4 @@
-#include "parsing.h"
+#include "helpers.h"
 
 vector<string> getFiles() {
     // Will read in book files from book-names.txt
@@ -22,18 +22,6 @@ void toLowerCase(string& w) {
     for (size_t i = 0; i < w.length(); i++) {
         w[i] = tolower(w[i]);
     }
-}
-
-int findInVec(const vector<int>& vec, const int& key) {
-    // Default value will be returned if key not found in vec
-    int index = -1;
-    for (size_t i = 0; i < vec.size(); i++) {
-        if (vec[i] == key) {
-            index = i;
-            break;
-        }
-    }
-    return index;
 }
 
 int countInVec(const vector<int>& vec, const int& key) {
@@ -61,7 +49,7 @@ void mergeMaps(map<string, int>& mp, map<string, int>& src, string key) {
         if (mp.count(it->first)) {
             mp[it->first] += src[it->first];
         }
-        else if (key != it->first) {
+        else {
             mp.emplace(it->first, src[it->first]);
         }
     }

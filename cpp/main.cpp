@@ -1,5 +1,7 @@
 #include "synonyms.h"
-#include "parsing.h"
+#include "helpers.h"
+#include "testers.h"
+#include <chrono>
 
 // Testing Functions
 void displaySentences(vector<vector<string> > vec);
@@ -7,39 +9,21 @@ void displaySemanticDescriptors(map<string, map<string, int> >& d);
 
 int main() {
 
-    // TESTING getSentenceListFromFiles
+    auto start = chrono::high_resolution_clock::now();
+
     vector<string> files = getFiles();
     vector<vector<string> > sentenceList; 
     sentenceList = getSentenceListFromFiles(files);
     map<string, map<string, int> > theMap;
     theMap = buildSemanticDescriptors(sentenceList);
-    displaySemanticDescriptors(theMap);
+    double accuracy = runSimilarityTest(
+                            "/home/ocost6/synonymSolver/cpp/test.txt", theMap);
+    cout << accuracy << endl;
 
-   // PARSING OKAY
-}
+    // Measure runtime
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration<double, milli>(stop - start).count(); 
+    cout << "\nRuntime: " << duration << " ms" << endl;
 
-void displaySentences(vector<vector<string> > vec) {
-    for (size_t i = 0; i < vec.size(); i++) {
-        for (size_t j = 0; j < vec[i].size(); j++) {
-            cout << vec[i][j] << " ";
-        }
-        cout << endl;
-    }
-}
-
-void displaySemanticDescriptors(map<string, map<string, int> >& d) {
-    string currKey = "";
-    for (map<string, map<string, int> >::iterator outIt = d.begin();
-        outIt != d.end(); ++outIt) {
-
-        currKey = outIt->first;
-        cout << currKey << " | ";
-
-        for (map<string, int>::iterator inIt = d[currKey].begin();
-            inIt != d[currKey].end(); ++inIt) {
-
-            cout << '"' << inIt->first << "\": " << inIt->second << ", ";
-        }
-        cout << endl;
-    }
+    return 0;
 }
